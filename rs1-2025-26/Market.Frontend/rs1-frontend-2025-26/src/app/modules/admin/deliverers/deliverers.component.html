@@ -1,0 +1,105 @@
+<div class="container">
+  <!-- Header Card -->
+  <div class="header-card mat-elevation-z2">
+    <div class="header-card-content">
+      <!-- Left: Title -->
+      <h1>Deliverers</h1>
+
+      <!-- Right: Search + New Button -->
+      <div class="actions-container">
+        <mat-form-field class="search-field" appearance="fill">
+          <mat-label>Search</mat-label>
+          <input matInput placeholder="Search by name or code..."
+            (keyup.enter)="request.paging.page = 1; loadPagedData()" [(ngModel)]="request.search" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="onCreate()">
+          <mat-icon>add</mat-icon>
+          New Deliverer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    Loading deliverers...
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!isLoading && errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table -->
+  <div class="mat-elevation-z8" *ngIf="!isLoading && !errorMessage">
+    <table mat-table [dataSource]="items">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let d">
+          <span style="font-weight: 500">{{ d.name }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Type Column -->
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let d">
+          <span class="type-chip" [ngClass]="getTypeClass(d.type)">
+            {{ getTypeLabel(d.type) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Code Column -->
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef>Code</th>
+        <td mat-cell *matCellDef="let d">
+          <span style="font-weight: 600; color: #4976b5">{{ d.code }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let d">
+          <mat-icon [ngClass]="d.isActive ? 'icon-enabled' : 'icon-disabled'">
+            {{ d.isActive ? 'check_circle' : 'cancel' }}
+          </mat-icon>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let d">
+          <button mat-icon-button color="primary" (click)="onEdit(d)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onDelete(d)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <!-- No data row -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="5">
+          <ng-container *ngIf="request.search; else noDataDefault">
+            No deliverers found for "{{ request.search }}"
+          </ng-container>
+          <ng-template #noDataDefault>
+            No deliverers available
+          </ng-template>
+        </td>
+      </tr>
+    </table>
+
+    <app-fit-paginator-bar [vm]="this"></app-fit-paginator-bar>
+  </div>
+</div>

@@ -1,0 +1,74 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+
+<mat-dialog-content>
+    <form [formGroup]="form" *ngIf="!isLoading && form">
+        <!-- Name Field -->
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="name" placeholder="E.g. Express Delivery Co." maxlength="100"
+                autocomplete="off" />
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="form.get('name')?.invalid">
+                {{ getErrorMessage('name') }}
+            </mat-error>
+            <mat-hint align="end">{{ form.get('name')?.value?.length || 0 }}/100</mat-hint>
+        </mat-form-field>
+
+        <!-- Type Dropdown -->
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Deliverer Type</mat-label>
+            <mat-select formControlName="type">
+                <mat-option *ngFor="let opt of typeOptions" [value]="opt.value">
+                    {{ opt.label }}
+                </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>category</mat-icon>
+            <mat-error *ngIf="form.get('type')?.invalid">
+                {{ getErrorMessage('type') }}
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Code Field -->
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Verification Code</mat-label>
+            <input matInput formControlName="code" placeholder="E.g. AX1" maxlength="3" autocomplete="off"
+                style="text-transform: uppercase;" />
+            <mat-icon matSuffix>badge</mat-icon>
+            <mat-error *ngIf="form.get('code')?.invalid">
+                {{ getErrorMessage('code') }}
+            </mat-error>
+            <mat-hint align="end">{{ form.get('code')?.value?.length || 0 }}/3 (Unique)</mat-hint>
+        </mat-form-field>
+
+        <!-- IsActive Toggle -->
+        <div class="toggle-container">
+            <div class="toggle-info">
+                <span class="toggle-label">Account Status</span>
+                <span class="toggle-hint">Active deliverers can be assigned to orders</span>
+            </div>
+            <mat-slide-toggle formControlName="isActive" color="primary">
+                {{ form.get('isActive')?.value ? 'ACTIVE' : 'INACTIVE' }}
+            </mat-slide-toggle>
+        </div>
+    </form>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading && !form" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading deliverer data...</p>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading">
+        <mat-icon>close</mat-icon>
+        Cancel
+    </button>
+
+    <button mat-raised-button color="primary" type="button" (click)="onSubmit()"
+        [disabled]="!form || form.invalid || isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'edit' : 'save' }}</mat-icon>
+        {{ isEditMode ? 'Update' : 'Save' }}
+    </button>
+</mat-dialog-actions>

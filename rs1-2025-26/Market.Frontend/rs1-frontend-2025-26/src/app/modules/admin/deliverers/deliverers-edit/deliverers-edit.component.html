@@ -1,0 +1,93 @@
+<div class="container">
+    <!-- Header -->
+    <div class="header-card mat-elevation-z2">
+        <h1>Edit Deliverer</h1>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoadingData" class="loading-card mat-elevation-z2">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading deliverer data...</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card mat-elevation-z2" *ngIf="!isLoadingData && form">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="error-banner">
+                <mat-icon>error</mat-icon>
+                <span>{{ errorMessage }}</span>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div *ngIf="isLoading" class="loading-overlay">
+                <mat-spinner diameter="50"></mat-spinner>
+                <p>Updating deliverer...</p>
+            </div>
+
+            <!-- Full Name -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="name" placeholder="E.g. Express Delivery Co." maxlength="100" />
+                <mat-icon matSuffix>person</mat-icon>
+                <mat-error *ngIf="hasError('name')">
+                    {{ getErrorMessage('name') }}
+                </mat-error>
+                <mat-hint align="end">{{ form.get('name')?.value?.length || 0 }}/100</mat-hint>
+            </mat-form-field>
+
+            <!-- Type and Code Row -->
+            <div class="form-row">
+                <!-- Deliverer Type -->
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Deliverer Type</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option *ngFor="let opt of typeOptions" [value]="opt.value">
+                            {{ opt.label }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>category</mat-icon>
+                    <mat-error *ngIf="hasError('type')">
+                        {{ getErrorMessage('type') }}
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Verification Code -->
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Verification Code</mat-label>
+                    <input matInput formControlName="code" placeholder="E.g. AX1" maxlength="3"
+                        style="text-transform: uppercase;" />
+                    <mat-icon matSuffix>badge</mat-icon>
+                    <mat-error *ngIf="hasError('code')">
+                        {{ getErrorMessage('code') }}
+                    </mat-error>
+                    <mat-hint align="end">{{ form.get('code')?.value?.length || 0 }}/3 (Unique)</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <!-- Account Status -->
+            <div class="toggle-container">
+                <div class="toggle-info">
+                    <span class="toggle-label">Account Status</span>
+                    <span class="toggle-hint">Active deliverers can be assigned to orders</span>
+                </div>
+                <mat-slide-toggle formControlName="isActive" color="primary">
+                    {{ form.get('isActive')?.value ? 'ACTIVE' : 'INACTIVE' }}
+                </mat-slide-toggle>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <button type="button" mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+                    <mat-icon>close</mat-icon>
+                    Cancel
+                </button>
+
+                <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || isLoading">
+                    <mat-icon>edit</mat-icon>
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
